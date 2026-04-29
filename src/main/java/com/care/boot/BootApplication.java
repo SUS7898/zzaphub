@@ -3,15 +3,16 @@ package com.care.boot;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
-import org.springframework.boot.builder.SpringApplicationBuilder; // 추가됨
-import org.springframework.boot.web.servlet.support.SpringBootServletInitializer; // 추가됨
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
 @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
-public class BootApplication extends SpringBootServletInitializer { // 1. 상속 추가
+public class BootApplication extends SpringBootServletInitializer {
 
-    // 2. 외장 톰캣이 이 앱을 시작할 수 있게 해주는 설정 추가
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+        // 여기에 에러 페이지 필터 중복 등록 방지 코드를 추가합니다.
+        setRegisterErrorPageFilter(false); 
         return builder.sources(BootApplication.class);
     }
 
