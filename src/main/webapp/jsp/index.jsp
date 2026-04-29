@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>index</title>
+<title>githubTest임</title>
 </head>
 <body>
 	<c:import url="/header"/>

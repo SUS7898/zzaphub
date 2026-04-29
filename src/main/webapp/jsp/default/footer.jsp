@@ -4,4 +4,6 @@
 <div align="center">
 		<hr>
 		Copyright CARE Lab. ALL rights reversed.
+		github Test
+		제발
 </div>
