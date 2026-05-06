@@ -2,7 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <c:import url="/header" />
 
-<link rel="stylesheet" href="${context}css/mypage.css">
+<link rel="stylesheet" href="src/main/webapp/css/mypage.css">
 
 <div class="gh-container">
     <!-- 1. 대시보드 요약 카드 -->
