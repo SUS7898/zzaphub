@@ -4,7 +4,7 @@
 <c:url var="context" value="/"/>
 
 <!-- 분리된 CSS 파일 연결 -->
-<link rel="stylesheet" href="src/main/webapp/css/header.css">
+<link rel="stylesheet" href="/css/header.css">
 
 <header class="gh-header">
     <div class="gh-left-nav">

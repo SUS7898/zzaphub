@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <c:import url="/header" />
-<link rel="stylesheet" href="${context}css/login.css">
+<link rel="stylesheet" href="/css/login.css">
 
 <div class="login-wrapper">
     <div class="login-box">
