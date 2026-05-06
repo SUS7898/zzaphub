@@ -1,9 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
     
-<div align="center">
-		<hr>
-		Copyright CARE Lab. ALL rights reversed.
-		github Test
-		제발씨!!!!!!!!!!!!!!!!!!!!!!!!!!!발
-</div>
+<link rel="stylesheet" href="${context}css/footer.css">
+<footer class="gh-footer">
+    <div class="gh-footer-content">
+        Copyright CARE Lab. ALL rights reversed.<br>
+        <strong>zzaphub Test</strong><br>
+        넌 정상적으로 구동해야만해
+    </div>
+</footer>

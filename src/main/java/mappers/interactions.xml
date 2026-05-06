@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+window - preferences - Maven - "Download Artifact Javadoc" check 
+ -->
+<mapper namespace="com.care.boot.interactions.IInteractionsMapper">
+
+    <select id="checkLikeExists" resultType="int">
+        SELECT COUNT(*) FROM reactions 
+        WHERE user_id = #{userId} AND target_type = #{targetType} AND target_id = #{targetId}
+    </select>
+
+    <insert id="insertLike">
+        INSERT INTO reactions (user_id, target_type, target_id, type)
+        VALUES (#{userId}, #{targetType}, #{targetId}, 'LIKE')
+    </insert>
+
+    <delete id="deleteLike">
+        DELETE FROM reactions 
+        WHERE user_id = #{userId} AND target_type = #{targetType} AND target_id = #{targetId}
+    </delete>
+
+    <select id="getLikeCount" resultType="int">
+        SELECT COUNT(*) FROM reactions 
+        WHERE target_type = #{targetType} AND target_id = #{targetId}
+    </select>
+
+    <insert id="insertReport">
+        INSERT INTO reports (reporter_id, target_type, target_id, reason)
+        VALUES (#{reporterId}, #{targetType}, #{targetId}, #{reason})
+    </insert>
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+

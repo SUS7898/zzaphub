@@ -1,0 +1,24 @@
+/* footer.css */
+.gh-footer {
+    padding: 40px 16px;
+    margin-top: 40px;
+    border-top: 1px solid #d0d7de; /* 옅은 회색 구분선 */
+    color: #6e7781;               /* 깃허브 특유의 보조 텍스트 색상 */
+    font-size: 12px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.gh-footer hr {
+    display: none; /* CSS로 경계선을 만들었으므로 기본 hr은 숨김 */
+}
+
+.gh-footer-content {
+    max-width: 1012px;
+    margin: 0 auto;
+}
+
+/* 감탄사(?) 부분 강조 (선택 사항) */
+.gh-footer strong {
+    color: #24292f;
+}

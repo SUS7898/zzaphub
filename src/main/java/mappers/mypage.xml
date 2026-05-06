@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+window - preferences - Maven - "Download Artifact Javadoc" check 
+ -->
+<mapper namespace="com.care.boot.mypage.IMyPageMapper">
+
+    <!-- 1. 통계 요약 (userId 숫자 기준) -->
+    <select id="getMyStats" resultType="com.care.boot.mypage.MyStatsDTO">
+        SELECT 
+            (SELECT t.name FROM titles t JOIN user_titles ut ON t.id = ut.title_id WHERE ut.user_id = #{userId} AND ut.is_equipped = true LIMIT 1) as equippedTitle,
+            (SELECT COUNT(*) FROM user_emoticons WHERE user_id = #{userId}) as emoticonCount,
+            (SELECT COUNT(*) FROM posts WHERE user_id = #{userId}) as postCount,
+            (SELECT COUNT(*) FROM comments WHERE user_id = #{userId} AND parent_id IS NULL) as commentCount,
+            (SELECT COUNT(*) FROM comments WHERE user_id = #{userId} AND parent_id IS NOT NULL) as replyCount,
+            (SELECT COUNT(*) FROM reactions r JOIN posts p ON r.target_id = p.id AND r.target_type = 'POST' WHERE p.user_id = #{userId} AND r.type = 'LIKE') as totalLikes,
+            (
+                (SELECT COUNT(*) FROM reports r JOIN posts p ON r.target_id = p.id AND r.target_type = 'POST' WHERE p.user_id = #{userId}) +
+                (SELECT COUNT(*) FROM reports r JOIN comments c ON r.target_id = c.id AND r.target_type = 'COMMENT' WHERE c.user_id = #{userId})
+            ) as totalReports
+        FROM DUAL
+    </select>
+
+    <!-- 2. 내가 쓴 글/댓글/답글 싹 모아서 최신순 정렬 (UNION ALL 활용) -->
+    <select id="getMyContents" resultType="com.care.boot.mypage.MyContentDTO">
+        SELECT 'POST' as type, id as postId, title as content, created_at as createdAt 
+        FROM posts WHERE user_id = #{userId}
+        UNION ALL
+        SELECT CASE WHEN parent_id IS NULL THEN 'COMMENT' ELSE 'REPLY' END as type, 
+               post_id as postId, content, created_at as createdAt 
+        FROM comments WHERE user_id = #{userId}
+        ORDER BY createdAt DESC LIMIT 20
+    </select>
+    
+    <!-- 3. 내가 받은 신고 내역 (해당 글 번호 찾아오기 조인) -->
+    <select id="getMyReports" resultType="com.care.boot.mypage.MyReportDTO">
+        SELECT '게시글' as targetType, r.reason, p.id as postId, r.status
+        FROM reports r JOIN posts p ON r.target_id = p.id AND r.target_type = 'POST'
+        WHERE p.user_id = #{userId}
+        UNION ALL
+        SELECT '댓글/답글' as targetType, r.reason, c.post_id as postId, r.status
+        FROM reports r JOIN comments c ON r.target_id = c.id AND r.target_type = 'COMMENT'
+        WHERE c.user_id = #{userId}
+    </select>
+
+<select id="getMyPosts" resultType="com.care.boot.posts.PostsDTO">
+        SELECT id, category, title, created_at as createdAt 
+        FROM posts 
+        WHERE user_id = #{userId} AND status = 'NORMAL'
+        ORDER BY created_at DESC
+    </select>
+
+    <select id="getMyPostCount" resultType="int">
+        SELECT COUNT(*) FROM posts WHERE user_id = #{userId} AND status = 'NORMAL'
+    </select>
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
