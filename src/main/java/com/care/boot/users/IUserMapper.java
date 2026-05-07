@@ -25,8 +25,15 @@ public interface IUserMapper {
 	void addPoint(@Param("id") Long id, @Param("point") int point);
 
 
-}
+	int countByEmail(@Param("email") String email);
 
+	int updateVerifiedByEmail(@Param("email") String email);
+
+	int countBlacklistByEmail(@Param("email") String email);
+
+	int insertBlacklist(@Param("email") String email, @Param("reason") String reason);
+
+}
 
 
 

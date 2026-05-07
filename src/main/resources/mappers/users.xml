@@ -90,6 +90,27 @@ window - preferences - Maven - "Download Artifact Javadoc" check
 	<delete id="deleteProc">
 		DELETE FROM users WHERE login_id = #{loginId}
 	</delete>
+
+	<!-- 8. 이메일 인증 API에서 사용하는 조회/수정 -->
+	<select id="countByEmail" resultType="int">
+		SELECT COUNT(*) FROM users WHERE email = #{email}
+	</select>
+
+	<update id="updateVerifiedByEmail">
+		UPDATE users
+		SET is_verified = true
+		WHERE email = #{email}
+	</update>
+
+	<select id="countBlacklistByEmail" resultType="int">
+		SELECT COUNT(*) FROM blacklist WHERE email = #{email}
+	</select>
+
+	<insert id="insertBlacklist">
+		INSERT INTO blacklist (email, reason)
+		VALUES (#{email}, #{reason})
+		ON DUPLICATE KEY UPDATE reason = VALUES(reason)
+	</insert>
 	
 	
 	<!-- 8. 회원 포인트 -->
@@ -120,7 +141,6 @@ window - preferences - Maven - "Download Artifact Javadoc" check
 		ON DUPLICATE KEY UPDATE reason = VALUES(reason)
 	</insert>
 </mapper>
-
 
 
 
