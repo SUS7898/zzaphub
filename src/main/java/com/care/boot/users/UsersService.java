@@ -12,9 +12,6 @@ import com.care.boot.PageService;
 
 import jakarta.servlet.http.HttpSession;
 
-
-
-
 @Service
 public class UsersService {
 	@Autowired private IUserMapper mapper;
@@ -44,19 +41,6 @@ public class UsersService {
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 		String secretPass = encoder.encode(user.getPw());
 		user.setPw(secretPass);
-		/*
-			암호문 : $2a$10$HJ3CfbI4MxDDSM3emVsuNudQyQE5StjV7g/UGK2vSQZQRmGy23OXi
-			암호문 길이: 60
-			
-			암호문 : $2a$10$nGmxZK6PVs.NV.QY.UX2T.OuGprkSwMs7FrNq6sOi1RfFPflQWUmO
-			암호문 길이: 60
-			
-			pw 컬럼의 크기를 암호문 크기와 같거나 크게 변경
-			ALTER TABLE db_quiz MODIFY pw varchar2(60);
-			COMMIT;
-		 */
-		System.out.println("암호문 : " + secretPass);
-		System.out.println("암호문 길이: " + secretPass.length());
 		
 		int result = mapper.registProc(user);
 		if(result == 1)
@@ -64,7 +48,6 @@ public class UsersService {
 		
 		return "회원 등록을 다시 시도하세요.";
 	}
-	
 	
 	public String loginProc(String loginId, String pw) {
 	    if(loginId == null || loginId.trim().isEmpty()) {
@@ -77,35 +60,24 @@ public class UsersService {
 	    UsersDTO check = mapper.login(loginId);
 	    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 	    
-	    // 1. 유저 존재 여부 및 비밀번호 일치 확인
 	    if(check != null && encoder.matches(pw, check.getPw())) {
-	        
-	        // 🛡️ [추가] 계정 정지 상태 확인
 	        if("BANNED".equals(check.getRole())) {
 	            return "정지된 계정입니다. 관리자에게 문의하세요.";
 	        }
 	        
-	        // 2. 로그인 성공 시 세션 설정
 	        session.setAttribute("id", check.getLoginId());
 	        session.setAttribute("userName", check.getName());
 	        session.setAttribute("userNo", check.getId());
 	        session.setAttribute("role", check.getRole());
-	        
-	        // 터미널 확인용 출력
-	        System.out.println("\n====== [로그인 성공 확인] ======");
-	        System.out.println("▶ 아이디 : " + session.getAttribute("id"));
-	        System.out.println("▶ 이름 : " + session.getAttribute("userName"));
-	        System.out.println("▶ 권한(ROLE) : " + session.getAttribute("role"));
-	        System.out.println("===========================\n");
 	        
 	        return "로그인 성공";
 	    }
 	    
 	    return "아이디 또는 비밀번호를 확인 후 다시 입력하세요.";
 	}
+
 	@Transactional(readOnly = true)
 	public String usersInfo(String select, String search, String cp, Model model) {
-	    // 1. 세션 확인 및 관리자 권한 체크
 	    String sessionId = (String) session.getAttribute("id");
 	    if (sessionId == null) {
 	        return "로그인 후 이용하세요.";
@@ -114,7 +86,6 @@ public class UsersService {
 	        return "관리자만 접근 가능한 메뉴입니다.";
 	    }
 	    
-	    // 2. 기존 페이징 로직 실행
 	    int currentPage = 1;
 	    try {
 	        currentPage = Integer.parseInt(cp);
@@ -132,7 +103,7 @@ public class UsersService {
 	    int totalCount = mapper.totalCount(select, search);
 	    
 	    if (totalCount == 0) {
-	        return "회원 목록 조회 성공"; // 데이터가 없어도 페이지는 띄워야 하므로 성공 리턴
+	        return "회원 목록 조회 성공";
 	    }
 	    
 	    String url = "usersInfo?select="+select+"&search="+search+"&currentPage=";
@@ -157,26 +128,10 @@ public class UsersService {
 		}
 		
 		UsersDTO user = mapper.login(loginId);
-		/* [수정 포인트] 
-		   새로운 DB(users)에는 address, detailAddress 컬럼이 없습니다.
-		   따라서 기존의 콤마(,)로 주소를 쪼개는 로직은 일단 주석 처리합니다.
-		   만약 나중에 주소 기능이 필요해지면 DB에 컬럼을 추가하고 아래 코드를 살리시면 됩니다.
-		*/
-		/*
-		if(user.getAddress() != null && user.getAddress().isEmpty() == false) {
-			String[] address = user.getAddress().split(",");
-			if(address.length >= 2) {
-				model.addAttribute("postcode", address[0]);
-				user.setAddress(address[1]);
-				if(address.length == 3) {
-					model.addAttribute("detailAddress", address[2]);
-				}
-			}
-		}
-		*/
 		model.addAttribute("user", user);
 		return "회원 검색 완료";
 	}
+
 	@Transactional
 	public String updateProc(UsersDTO user) {
 		if(user.getPw() == null || user.getPw().trim().isEmpty()) {
@@ -188,7 +143,7 @@ public class UsersService {
 		if(user.getName() == null || user.getName().trim().isEmpty()) {
 			return "이름을 입력하세요.";
 		}
-		/* 암호화 과정 */
+
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 		String secretPass = encoder.encode(user.getPw());
 		user.setPw(secretPass);
@@ -220,22 +175,26 @@ public class UsersService {
 		
 		return "아이디 또는 비밀번호를 확인 후 입력하세요";
 	}
+	
+	// UsersService.java 에 아래 메서드들을 추가하거나 수정하세요.
+
+	// 🔍 아이디 찾기: 이메일로 검색하여 아이디만 반환
+	public String findIdByEmail(String email) {
+	    return mapper.findIdByEmail(email);
+	}
+
+	// 🔐 비밀번호 업데이트 (resetPwProc 내부에서 사용)
+	@Transactional
+	public String resetPwProc(String loginId, String pw, String pwConfirm) {
+	    if(pw == null || pw.trim().isEmpty()) return "새 비밀번호를 입력하세요.";
+	    if(!pw.equals(pwConfirm)) return "비밀번호가 일치하지 않습니다.";
+	    
+	    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+	    String encodedPw = encoder.encode(pw);
+	    
+	    // mapper에 updatePw 메서드가 있어야 합니다.
+	    int result = mapper.updatePw(loginId, encodedPw);
+	    return result > 0 ? "success" : "fail";
+	}
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

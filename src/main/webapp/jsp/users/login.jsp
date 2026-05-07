@@ -19,30 +19,32 @@
                 </div>
 
                 <div class="form-group">
-                    <div class="label-wrapper">
-                        <label for="pw">Password</label>
-                        <a href="${context}findPw" class="find-link">Forgot password?</a>
-                    </div>
+                    <label for="pw">Password</label>
                     <input type="password" name="pw" id="pw" class="login-input" required>
                 </div>
 
                 <button type="submit" class="btn-login">Sign in</button>
             </form>
             
+            <%-- 🔍 아이디 / 비밀번호 찾기 링크 모음 --%>
+            <div class="login-helper-links">
+                <a href="${context}findId">Forgot Username?</a>
+                <span class="divider">|</span>
+                <a href="${context}findPw">Forgot Password?</a>
+            </div>
+
+            <%-- 💬 카카오 로그인 주석 처리 
             <div class="social-login">
                 <p>Or sign in with</p>
                 <a href="https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=YOUR_ID&redirect_uri=YOUR_URL">
                     <img src="https://k.kakaocdn.net/14/dn/btroDszwNrM/I6efHub1SN5KCJqLm1Ovx1/o.jpg" alt="카카오 로그인">
                 </a>
             </div>
+            --%>
         </div>
 
         <div class="signup-prompt">
             New to zzapHub? <a href="${context}regist">Create an account</a>.
-        </div>
-        
-        <div class="find-id-prompt">
-             <a href="${context}findId">Find my Username</a>
         </div>
     </div>
 </div>

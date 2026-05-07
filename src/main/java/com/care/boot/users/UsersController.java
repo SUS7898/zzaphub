@@ -4,16 +4,21 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class UsersController {
 	@Autowired private UsersService service;
 	@Autowired private HttpSession session;
+	
+	/*
 	@Autowired private KakaoService kakaoService; // 하단에 있던 Autowired를 위로 모았습니다.
+	*/
 	
 	@RequestMapping("regist")
 	public String regist() {
@@ -66,11 +71,11 @@ public class UsersController {
 	    session.invalidate(); // 세션 초기화
 	    ra.addFlashAttribute("msg", "로그 아웃되었습니다.");
 	    
-	    // 카카오 로그아웃 연동
+	    /* 카카오 로그아웃 연동
 	    if (kakaoService != null) {
 	        kakaoService.unlink();
 	    }
-	    
+	    */
 	    return "redirect:/index";
 	}
 	
@@ -166,11 +171,49 @@ public class UsersController {
 		return "users/delete";
 	}
 	
+	
+	// 아이디 찾기 페이지 이동
+	@GetMapping("/findId")
+	public String findId() { return "users/findId"; }
+
+	// 아이디 찾기 처리
+	@PostMapping("/findIdProc")
+	@ResponseBody
+	public String findIdProc(@RequestParam("email") String email) {
+	    String loginId = service.findIdByEmail(email); // 서비스에 메서드 구현 필요
+	    if(loginId == null) return "해당 이메일로 가입된 아이디가 없습니다.";
+	    return "찾으시는 아이디는 [" + loginId + "] 입니다.";
+	}
+
+	// 비밀번호 찾기(인증) 페이지 이동
+	@GetMapping("/findPw")
+	public String findPw() { return "users/findPw"; }
+
+	// 인증 성공 후 비밀번호 재설정 페이지로 이동
+	@PostMapping("/resetPw")
+	public String resetPw(@RequestParam("loginId") String loginId, Model model) {
+	    model.addAttribute("targetId", loginId);
+	    return "users/resetPw";
+	}
+
+	// 비밀번호 실제 업데이트 처리
+	@PostMapping("resetPwProc")
+	public String resetPwProc(String loginId, String pw, String pwConfirm, Model model) {
+	    String res = service.resetPwProc(loginId, pw, pwConfirm);
+	    if(res.equals("success")) {
+	        model.addAttribute("msg", "비밀번호가 변경되었습니다. 다시 로그인해 주세요.");
+	        return "users/login";
+	    }
+	    model.addAttribute("msg", res);
+	    return "users/resetPw";
+	}
+	
 	/*
 	 http://localhost:8086/dbQuiz/kakaoLogin?
 	 code=G2QFgIqYioKud_fa02jp1mikcoWU6ccLmKC_-T0xgHFoZlqddz74QKyM9sowSyG0x1c
 	 xjwo9c00AAAGLA55NoQ
 	 */
+	/*
 	@RequestMapping("kakaoLogin")
 	public String kakaoLogin(@RequestParam("code") String code) {
 		System.out.println("code : " + code);
@@ -179,4 +222,6 @@ public class UsersController {
 		
 		return "redirect:index";
 	}
+	*/
+	
 }

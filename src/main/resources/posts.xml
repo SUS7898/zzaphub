@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper
-    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-   
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.care.boot.posts.IPostsMapper">
 
     <resultMap id="postsMap" type="com.care.boot.posts.PostsDTO">
         <id column="id" property="id"/>
         <result column="user_id" property="userId"/>
-        <result column="login_id" property="loginId"/> <result column="view_count" property="viewCount"/>
+        <result column="login_id" property="loginId"/>
+        <result column="view_count" property="viewCount"/>
         <result column="created_at" property="createdAt"/>
         <result column="file_name" property="fileName"/>
         <result column="category" property="category"/>
@@ -17,31 +15,22 @@
     </resultMap>
 
     <select id="getPostsList" resultMap="postsMap">
-        SELECT p.*, u.login_id 
-        FROM posts p 
-        JOIN users u ON p.user_id = u.id
+        SELECT p.*, u.login_id FROM posts p JOIN users u ON p.user_id = u.id
         <where>
-            <if test="category != null and category != 'ALL'">
-                AND p.category = #{category}
-            </if>
+            <if test="category != null and category != 'ALL'">AND p.category = #{category}</if>
         </where>
-        ORDER BY p.id DESC
-        LIMIT #{begin}, #{pageBlock}
+        ORDER BY p.id DESC LIMIT #{begin}, #{pageBlock}
     </select>
 
     <select id="getTotalCountByCategory" resultType="int">
         SELECT COUNT(*) FROM posts
         <where>
-            <if test="category != null and category != 'ALL'">
-                AND category = #{category}
-            </if>
+            <if test="category != null and category != 'ALL'">AND category = #{category}</if>
         </where>
     </select>
 
     <select id="postsContent" resultMap="postsMap">
-        SELECT p.*, u.login_id 
-        FROM posts p JOIN users u ON p.user_id = u.id
-        WHERE p.id = #{id}
+        SELECT p.*, u.login_id FROM posts p JOIN users u ON p.user_id = u.id WHERE p.id = #{id}
     </select>
 
     <insert id="postsWriteProc">
@@ -54,21 +43,18 @@
     </update>
 
     <select id="getRecentByCategory" resultMap="postsMap">
-        SELECT p.*, u.login_id 
-        FROM posts p 
-        JOIN users u ON p.user_id = u.id
-        WHERE p.category = #{category} 
-        ORDER BY p.id DESC 
-        LIMIT #{limit}
+        SELECT p.*, u.login_id FROM posts p JOIN users u ON p.user_id = u.id
+        WHERE p.category = #{category} ORDER BY p.id DESC LIMIT #{limit}
     </select>
 
     <select id="getPopularPosts" resultMap="postsMap">
-        SELECT p.*, u.login_id 
-        FROM posts p 
-        JOIN users u ON p.user_id = u.id
-        ORDER BY p.view_count DESC 
-        LIMIT #{limit}
+        SELECT p.*, u.login_id FROM posts p JOIN users u ON p.user_id = u.id
+        ORDER BY p.view_count DESC LIMIT #{limit}
     </select>
+
+    <update id="postsModifyProc">
+        UPDATE posts SET title = #{title}, content = #{content}, category = #{category} WHERE id = #{id}
+    </update>
 
     <delete id="deleteCommentsByPostId">
         DELETE FROM comments WHERE post_id = #{postId}
@@ -78,20 +64,8 @@
         DELETE FROM posts WHERE id = #{id}
     </delete>
 
-    <update id="postsModifyProc">
-        UPDATE posts SET 
-            title = #{title}, 
-            content = #{content}, 
-            category = #{category} 
-        WHERE id = #{id}
+    <update id="addPoint">
+        UPDATE users SET point = point + #{point} WHERE id = (SELECT user_id FROM posts WHERE id = #{id})
     </update>
 
 </mapper>
-
-
-
-
-
-
-
-

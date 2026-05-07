@@ -33,6 +33,10 @@ public interface IUserMapper {
 
 	int insertBlacklist(@Param("email") String email, @Param("reason") String reason);
 
+	String findIdByEmail(String email); // 이메일로 아이디 검색
+	int updatePw(@Param("loginId") String loginId, @Param("pw") String pw); // 비밀번호 변경
+	
+	
 }
 
 

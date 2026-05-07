@@ -40,5 +40,8 @@ public interface IPostsMapper {
     // 파일 다운로드 (필요 시 구현)
     String postsDownload(long id);
     
+ // 기존 메서드 아래에 추가
+    String findIdByEmail(@Param("email") String email);
+    
     void addPoint(@Param("id") Long id, @Param("point") int point);
 }

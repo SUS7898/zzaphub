@@ -119,6 +119,12 @@ window - preferences - Maven - "Download Artifact Javadoc" check
 		VALUES (#{email}, #{reason})
 		ON DUPLICATE KEY UPDATE reason = VALUES(reason)
 	</insert>
+	
+	<update id="updatePw">
+		UPDATE users 
+		SET pw = #{pw} 
+		WHERE login_id = #{loginId}
+	</update>
 </mapper>
 
 
