@@ -21,8 +21,15 @@ public interface IUserMapper {
 
 	int deleteProc(String id);
 
-}
+	int countByEmail(@Param("email") String email);
 
+	int updateVerifiedByEmail(@Param("email") String email);
+
+	int countBlacklistByEmail(@Param("email") String email);
+
+	int insertBlacklist(@Param("email") String email, @Param("reason") String reason);
+
+}
 
 
 
