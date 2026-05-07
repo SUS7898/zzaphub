@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+window - preferences - Maven - "Download Artifact Javadoc" check 
+ -->
+<mapper namespace="com.care.boot.admin.IAdminMapper">
+
+    <select id="getUserList" resultType="com.care.boot.users.UsersDTO">
+        SELECT id, login_id AS loginId, name, email, role, created_at AS createdAt 
+        FROM users ORDER BY id DESC
+    </select>
+
+    <update id="updateUserRole">
+        UPDATE users SET role = #{newRole} WHERE id = #{userId}
+    </update>
+
+    <update id="userBan">
+        UPDATE users SET role = 'BANNED' WHERE id = #{id}
+    </update>
+    
+    <select id="getReportSummary" resultType="map">
+        SELECT target_type AS targetType, target_id AS targetId, 
+               COUNT(*) AS reportCount, status
+        FROM reports
+        GROUP BY target_type, target_id
+        HAVING reportCount >= #{minCount}
+        ORDER BY reportCount DESC
+    </select>
+
+    <update id="updateReportStatus">
+        UPDATE reports SET status = #{status} WHERE target_id = #{targetId}
+    </update>
+    <select id="getUserById" resultType="com.care.boot.users.UsersDTO">
+    SELECT id, login_id AS loginId, name, email, phone, point, role, created_at AS createdAt 
+    FROM users WHERE id = #{id}
+</select>
+
+<update id="updateUserPoint">
+    UPDATE users SET point = point + #{amount} WHERE id = #{userId}
+</update>
+
+
+    
+</mapper>
+
+
+
+
+
+

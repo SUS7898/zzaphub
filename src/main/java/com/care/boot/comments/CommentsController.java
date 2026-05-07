@@ -4,6 +4,9 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import com.care.boot.users.IUserMapper;
 import com.care.boot.users.UsersDTO;
 
@@ -15,20 +18,35 @@ public class CommentsController {
     @PostMapping("commentProc")
     public String commentProc(CommentsDTO dto, HttpSession session) {
         String loginId = (String) session.getAttribute("id");
-        
-        // 로그인 상태가 아니면 거부
-        if (loginId == null) {
-            return "redirect:login";
-        }
+        if (loginId == null) return "redirect:login";
 
-        // DB 고유 번호(id)를 가져오기 위해 유저 정보 조회
         UsersDTO user = userMapper.login(loginId);
         if (user != null) {
-            dto.setUserId(user.getId()); // UsersDTO의 id(Integer)를 CommentsDTO의 userId에 세팅
+            dto.setUserId(Long.valueOf(user.getId())); 
             commentsService.addComment(dto);
         }
+        return "redirect:postsContent?id=" + dto.getPostId();
+    }
 
-        // 다시 해당 게시글 상세 페이지로 리다이렉트
+    // ✅ 댓글 삭제 요청 처리
+    @RequestMapping("commentDelete")
+    public String commentDelete(@RequestParam("id") Long id, @RequestParam("postId") Long postId, HttpSession session) {
+        String sessionId = (String) session.getAttribute("id");
+        String role = (String) session.getAttribute("role");
+        
+        if(sessionId == null) return "redirect:login";
+
+        commentsService.deleteComment(id, sessionId, role);
+        return "redirect:postsContent?id=" + postId;
+    }
+
+    // ✅ 댓글 수정 요청 처리
+    @PostMapping("commentModifyProc")
+    public String commentModifyProc(CommentsDTO dto, HttpSession session) {
+        String sessionId = (String) session.getAttribute("id");
+        if(sessionId == null) return "redirect:login";
+        
+        commentsService.modifyComment(dto, sessionId);
         return "redirect:postsContent?id=" + dto.getPostId();
     }
 }

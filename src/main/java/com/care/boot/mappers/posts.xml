@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="com.care.boot.posts.IPostsMapper">
+
+    <resultMap id="postsMap" type="com.care.boot.posts.PostsDTO">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="login_id" property="loginId"/>
+        <result column="view_count" property="viewCount"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="file_name" property="fileName"/>
+    </resultMap>
+
+    <!-- ✅ 1. 게시글 총 개수 구하기 (누락되었던 부분) -->
+    <select id="totalCount" resultType="int">
+        SELECT COUNT(*) FROM posts
+    </select>
+
+    <!-- 게시글 목록 (작성자 아이디 포함) -->
+    <select id="postsForm" resultMap="postsMap">
+        SELECT p.*, u.login_id 
+        FROM posts p JOIN users u ON p.user_id = u.id
+        WHERE p.status = 'NORMAL'
+        ORDER BY p.id DESC 
+        LIMIT #{begin}, #{pageBlock}
+    </select>
+
+    <!-- 게시글 상세 -->
+    <select id="postsContent" resultMap="postsMap">
+        SELECT p.*, u.login_id 
+        FROM posts p JOIN users u ON p.user_id = u.id
+        WHERE p.id = #{id}
+    </select>
+
+    <!-- 글 작성 (userId 사용) -->
+    <insert id="postsWriteProc" parameterType="com.care.boot.posts.PostsDTO">
+        INSERT INTO posts (user_id, category, title, content)
+        VALUES (#{userId}, #{category}, #{title}, #{content})
+    </insert>
+
+    <!-- ✅ 2. 조회수 증가 (ID를 서비스/인터페이스와 맞춰 incrementHits로 변경) -->
+    <update id="incrementHits">
+        UPDATE posts SET view_count = view_count + 1 WHERE id = #{id}
+    </update>
+
+
+
+</mapper>
+
+
+
+
+
+
+
+
+
+

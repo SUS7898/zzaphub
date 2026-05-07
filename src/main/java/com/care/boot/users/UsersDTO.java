@@ -24,6 +24,8 @@ public class UsersDTO {
 	private String email;
 	private String phone;
 	private Integer point;
+	
+	
 	private String role;         // ENUM을 따로 만들었다면 Role role; 로 사용
 	private Boolean isVerified;
 	private LocalDateTime createdAt; // import java.time.LocalDateTime; 필요

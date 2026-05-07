@@ -12,6 +12,9 @@ import com.care.boot.PageService;
 
 import jakarta.servlet.http.HttpSession;
 
+
+
+
 @Service
 public class UsersService {
 	@Autowired private IUserMapper mapper;
@@ -64,33 +67,41 @@ public class UsersService {
 	
 	
 	public String loginProc(String loginId, String pw) {
-		if(loginId == null || loginId.trim().isEmpty()) {
-			return "아이디를 입력하세요.";
-		}
-		if(pw == null || pw.trim().isEmpty()) {
-			return "비밀번호를 입력하세요.";
-		}
-		
-		UsersDTO check = mapper.login(loginId);
-		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-		if(check != null && encoder.matches(pw, check.getPw()) == true) {
-			session.setAttribute("id", check.getLoginId());
-			session.setAttribute("userName", check.getName());
-			// 새 DB에는 address 대신 phone과 email이 있습니다. 필요시 주석 해제하여 사용하세요.
-			// session.setAttribute("phone", check.getPhone());
-			// session.setAttribute("email", check.getEmail());
-			
-			
-			/*
-			 * session.setAttribute("user", check);
-			 * ${sessionScope.user.id}
-			 * ${sessionScope.user.pw}
-			 * ${sessionScope.user.userName}
-			 */
-			return "로그인 성공";
-		}
-		
-		return "아이디 또는 비밀번호를 확인 후 다시 입력하세요.";
+	    if(loginId == null || loginId.trim().isEmpty()) {
+	        return "아이디를 입력하세요.";
+	    }
+	    if(pw == null || pw.trim().isEmpty()) {
+	        return "비밀번호를 입력하세요.";
+	    }
+	    
+	    UsersDTO check = mapper.login(loginId);
+	    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+	    
+	    // 1. 유저 존재 여부 및 비밀번호 일치 확인
+	    if(check != null && encoder.matches(pw, check.getPw())) {
+	        
+	        // 🛡️ [추가] 계정 정지 상태 확인
+	        if("BANNED".equals(check.getRole())) {
+	            return "정지된 계정입니다. 관리자에게 문의하세요.";
+	        }
+	        
+	        // 2. 로그인 성공 시 세션 설정
+	        session.setAttribute("id", check.getLoginId());
+	        session.setAttribute("userName", check.getName());
+	        session.setAttribute("userNo", check.getId());
+	        session.setAttribute("role", check.getRole());
+	        
+	        // 터미널 확인용 출력
+	        System.out.println("\n====== [로그인 성공 확인] ======");
+	        System.out.println("▶ 아이디 : " + session.getAttribute("id"));
+	        System.out.println("▶ 이름 : " + session.getAttribute("userName"));
+	        System.out.println("▶ 권한(ROLE) : " + session.getAttribute("role"));
+	        System.out.println("===========================\n");
+	        
+	        return "로그인 성공";
+	    }
+	    
+	    return "아이디 또는 비밀번호를 확인 후 다시 입력하세요.";
 	}
 	@Transactional(readOnly = true)
 	public String usersInfo(String select, String search, String cp, Model model) {

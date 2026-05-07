@@ -20,6 +20,10 @@ public interface IUserMapper {
 	int updateProc(UsersDTO user);
 
 	int deleteProc(String id);
+	
+	// 특정 유저의 포인트를 추가하는 메서드
+	void addPoint(@Param("id") Long id, @Param("point") int point);
+
 
 }
 

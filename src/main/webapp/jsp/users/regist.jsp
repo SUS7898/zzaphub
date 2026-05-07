@@ -1,71 +1,47 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <c:import url="/header" />
+<link rel="stylesheet" href="/css/user.css">
 
-<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-<script>
-    function sample6_execDaumPostcode() {
-        new daum.Postcode({
-            oncomplete: function(data) {
-                // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+<div class="user-wrapper">
+    <div class="user-box">
+        <h2 class="user-heading">Join zzapHub</h2>
+        
+        <c:if test="${not empty msg}">
+            <div class="error-msg">${msg}</div>
+        </c:if>
 
-                // 각 주소의 노출 규칙에 따라 주소를 조합한다.
-                // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
-                var addr = ''; // 주소 변수
+        <div class="user-card user-card-white">
+            <form action="registProc" method="post">
+                <div class="form-group">
+                    <label>Username (ID) *</label>
+                    <input type="text" name="loginId" class="user-input" required>
+                </div>
+                <div class="form-group">
+                    <label>Password *</label>
+                    <input type="password" name="pw" id="pw" class="user-input" required>
+                </div>
+                <div class="form-group">
+                    <label>Confirm Password *</label>
+                    <input type="password" name="confirm" class="user-input" required>
+                </div>
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" name="name" class="user-input">
+                </div>
+                <div class="form-group">
+                    <label>Email address</label>
+                    <input type="email" name="email" class="user-input">
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="text" name="phone" class="user-input" placeholder="010-0000-0000">
+                </div>
 
-                //사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
-                if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
-                    addr = data.roadAddress;
-                } else { // 사용자가 지번 주소를 선택했을 경우(J)
-                    addr = data.jibunAddress;
-                }
-
-                // 우편번호와 주소 정보를 해당 필드에 넣는다.
-                document.getElementById('sample6_postcode').value = data.zonecode;
-                document.getElementById("sample6_address").value = addr;
-                // 커서를 상세주소 필드로 이동한다.
-                document.getElementById("sample6_detailAddress").focus();
-            }
-        }).open();
-    }
-</script>
-
-<div align="center">
-	<h1>회원 등록</h1>
-	<table>
-	<tr><td>
-		<font color="red">${msg }</font>
-	</td></tr>
-	<tr><td>
-	<form action="registProc" method="post" id="f">
-		<!-- 1. id -> loginId 로 변경 -->
-		<input type="text" name="loginId" placeholder="아이디" id="loginId"> (*필수 항목) <br>
-		
-		<input type="password" name="pw" placeholder="비밀번호" id="pw"><br>
-		
-		<input type="password" name="confirm" placeholder="비밀번호 확인" id="confirm" onchange="pwCheck()">
-		<label id="label"></label><br>
-		
-		<!-- 2. userName -> name 으로 변경 -->
-		<input type="text" name="name" id="name" placeholder="이름"><br>
-		
-		<!-- 3. 새 DB에 맞게 이메일 추가 -->
-		<input type="email" name="email" id="email" placeholder="이메일 (예: test@test.com)"><br>
-		
-		<!-- 4. mobile -> phone 으로 변경 -->
-		<input type="text" name="phone" id="phone" placeholder="전화번호"><br>
-		
-		<!-- 5. 주소 입력칸(postcode, address 등)은 DB 구조에 맞춰 제거함 -->
-
-		<!-- <input type="button" value="회원가입" onclick="allCheck()"> -->
-		<input type="submit" value="회원가입">
-		<input type="button" value="취소" onclick="location.href='index'"><br>
-	</form>
-	</td></tr></table>
+                <button type="submit" class="btn-user">Create account</button>
+                <button type="button" class="btn-user btn-cancel" onclick="location.href='index'">Cancel</button>
+            </form>
+        </div>
+    </div>
 </div>
-
 <c:import url="/footer" />
-
-
-

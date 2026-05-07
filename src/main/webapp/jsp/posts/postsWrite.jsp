@@ -19,14 +19,19 @@
     <div class="write-header">New Post</div>
     
     <form action="postsWriteProc" method="post" enctype="multipart/form-data">
-        <div class="form-group">
-            <label for="category">Category</label>
-            <select name="category" id="category" class="form-control">
-                <option value="자유">자유게시판</option>
-                <option value="질문">Q&A</option>
-                <option value="공지">공지사항</option>
-            </select>
-        </div>
+<div class="form-group">
+    <label for="category">Category</label>
+    <select name="category" id="category" class="form-control">
+        <option value="FREE">자유게시판</option>
+        <option value="Q&A">Q&A</option>
+        <option value="PROGRAM">프로그램 게시판</option>
+        
+        <%-- 👑 관리자(ADMIN) 또는 매니저(MANAGER)에게만 공지사항 옵션 노출 --%>
+        <c:if test="${sessionScope.role eq 'ADMIN' or sessionScope.role eq 'MANAGER'}">
+            <option value="NOTICE">공지사항</option>
+        </c:if>
+    </select>
+</div>
 
         <div class="form-group">
             <label for="title">Title</label>

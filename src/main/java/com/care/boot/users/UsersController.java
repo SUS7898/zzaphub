@@ -47,23 +47,31 @@ public class UsersController {
 	public String loginProc(@RequestParam("loginId") String loginId, 
 	                        @RequestParam("pw") String pw, 
 	                        Model model, RedirectAttributes ra) {
-		String msg = service.loginProc(loginId, pw);
-		if(msg.equals("로그인 성공")) {
-			ra.addFlashAttribute("msg", msg);
-			return "redirect:index";
-		}
-		model.addAttribute("msg", msg);
-		return "users/login";
+	    
+	    String msg = service.loginProc(loginId, pw);
+	    
+	    // 1. 로그인 성공 시
+	    if(msg.equals("로그인 성공")) {
+	        ra.addFlashAttribute("msg", msg);
+	        return "redirect:/index"; // 절대 경로 권장
+	    }
+	    
+	    // 2. 로그인 실패 시 (비번 불일치 OR 정지된 계정)
+	    model.addAttribute("msg", msg);
+	    return "users/login";
 	}
-	
-	@RequestMapping("logout")
+
+	@RequestMapping("/logout")
 	public String logout(RedirectAttributes ra) {
-		session.invalidate();
-		ra.addFlashAttribute("msg", "로그 아웃");
-		
-		// 카카오 로그아웃 연동
-		kakaoService.unlink();
-		return "redirect:index";
+	    session.invalidate(); // 세션 초기화
+	    ra.addFlashAttribute("msg", "로그 아웃되었습니다.");
+	    
+	    // 카카오 로그아웃 연동
+	    if (kakaoService != null) {
+	        kakaoService.unlink();
+	    }
+	    
+	    return "redirect:/index";
 	}
 	
 	// 1. 전체 회원 목록 (관리자 전용)
@@ -92,6 +100,7 @@ public class UsersController {
 	    String msg = service.userInfo(loginId, model);
 	    loginId = (String)session.getAttribute("id");
 	    
+	    	
 	    if(msg.equals("회원 검색 완료")) {
 	        return "users/userInfo";
 	    }
@@ -102,31 +111,33 @@ public class UsersController {
 	}
 	
 	//http://localhost:8086/dbQuiz/update
-	@RequestMapping("update")
-	public String update() {
-		String sessionId = (String)session.getAttribute("id");
-		if(sessionId == null)
-			return "redirect:login";
-		
-		return "users/update";
-	}
+	@RequestMapping("/userUpdate")
+    public String update() {
+        String sessionId = (String)session.getAttribute("id");
+        if(sessionId == null)
+            return "redirect:/login";
+        
+        return "users/update";
+    }
 	
-	@PostMapping("updateProc")
-	public String updateProc(UsersDTO users, Model model) {
-		String sessionId = (String)session.getAttribute("id");
-		if(sessionId == null)
-			return "redirect:login";
-		
-		users.setLoginId(sessionId);
-		String msg = service.updateProc(users);
-		if(msg.equals("회원 수정 완료")) {
-			session.invalidate();
-			return "redirect:index";
-		}
-		
-		model.addAttribute("msg", msg);
-		return "users/update";
-	}
+	@PostMapping("/updateProc")
+    public String updateProc(UsersDTO users, Model model) {
+        String sessionId = (String)session.getAttribute("id");
+        if(sessionId == null)
+            return "redirect:/login";
+        
+        users.setLoginId(sessionId);
+        String msg = service.updateProc(users);
+        
+        if(msg.equals("회원 수정 완료")) {
+            // 수정 완료 후 세션을 날리지 않고 마이페이지로 보내는 것이 일반적입니다.
+            // 만약 로그아웃 시키고 싶다면 기존처럼 invalidate()를 유지하세요.
+            return "redirect:/index"; 
+        }
+        
+        model.addAttribute("msg", msg);
+        return "users/update";
+    }
 	
 	//http://localhost:8086/dbQuiz/delete
 	@RequestMapping("delete")

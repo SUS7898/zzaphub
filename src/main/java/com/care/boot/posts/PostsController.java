@@ -1,5 +1,7 @@
 package com.care.boot.posts;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,18 +20,22 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 public class PostsController {
     @Autowired private PostsService service;
-    @Autowired private CommentsService commentsService; // 댓글 서비스 주입
-    @Autowired private IInteractionsMapper interactionsMapper; // 좋아요 조회를 위한 매퍼 주입
+    @Autowired private CommentsService commentsService;
+    @Autowired private IInteractionsMapper interactionsMapper;
     @Autowired private HttpSession session;
-    
+
+
+
     @RequestMapping("postsForm")
     public String postsForm(Model model,
-            @RequestParam(value="currentPage", required = false, defaultValue = "1") String cp) {
-        // 서비스 내부에서 model.addAttribute("postsList", ...) 가 실행되는지 확인 필요
-        service.postsForm(cp, model); 
+            @RequestParam(value="currentPage", required = false, defaultValue = "1") String cp,
+            @RequestParam(value="category", required = false, defaultValue = "ALL") String category) {
+        
+        service.postsForm(cp, category, model);
+        model.addAttribute("currentCategory", category); 
+        
         return "posts/postsForm";
-    }
-    
+    }    
     @RequestMapping("postsWrite")
     public String postsWrite() {
         if(session.getAttribute("id") == null) return "redirect:login";
@@ -39,6 +45,18 @@ public class PostsController {
     @PostMapping("postsWriteProc")
     public String postsWriteProc(MultipartHttpServletRequest multi) {
         if(session.getAttribute("id") == null) return "redirect:login";
+
+        String category = multi.getParameter("category");
+        String role = (String) session.getAttribute("role");
+
+        // 💡 보안 로직: 공지사항 카테고리를 선택했는데 권한이 관리자가 아니라면 튕겨냄
+        if ("NOTICE".equals(category)) {
+            if (!"ADMIN".equals(role) && !"MANAGER".equals(role)) {
+                // 권한이 없는데 공지사항 작성을 시도한 경우
+                return "redirect:postsForm"; 
+            }
+        }
+
         return service.postsWriteProc(multi);
     }
     
@@ -81,8 +99,9 @@ public class PostsController {
     @RequestMapping("postsDeleteProc")
     public String postsDeleteProc(@RequestParam("id") String id) {
         if(session.getAttribute("id") == null) return "redirect:login";
-        
-        String msg = service.postsDeleteProc(id);
+        String role = (String) session.getAttribute("role");
+        	
+        String msg = service.postsDeleteProc(id,role);
         if(msg.equals("작성자만 삭제 할 수 있습니다."))
             return "redirect:postsContent?id=" + id;
         
