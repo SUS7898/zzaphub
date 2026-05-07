@@ -22,9 +22,30 @@
 
     <div class="posts-bubble">
         <div class="posts-bubble-header"><strong>${posts.loginId}</strong> commented on ${posts.createdAt}</div>
-        <div class="posts-bubble-body">${posts.content}</div>
+        <div class="posts-bubble-body">
+            ${posts.content}
+            
+            <%-- 🚀 파일 다운로드 및 코드 프리뷰 출력 영역 --%>
+            <c:if test="${not empty posts.fileName}">
+                <div style="border-top: 1px solid #d0d7de; padding-top: 16px; margin-top: 20px;">
+                    <strong>📎 첨부파일:</strong> 
+                    <a href="postsDownload?id=${posts.id}" style="color: #0969da; text-decoration: none; font-weight: 600;">
+                        ${originalFileName} (다운로드)
+                    </a>
+                    
+                    <%-- 파일 텍스트 데이터가 있을 때만 프리뷰 박스 렌더링 --%>
+                    <c:if test="${not empty filePreview}">
+                        <div class="code-preview-container">
+                            <pre class="code-preview"><code class="code-text"><c:out value="${filePreview}"/></code></pre>
+                            <div class="preview-overlay">마우스를 올리면 코드 전체 보기</div>
+                        </div>
+                    </c:if>
+                </div>
+            </c:if>
+        </div>
     </div>
 
+    <%-- 댓글 섹션 시작 --%>
     <div class="comments-section">
         <c:forEach var="comment" items="${comments}">
             <div class="comment-wrapper ${comment.parentId != null ? 'reply-item' : ''}">
@@ -35,7 +56,7 @@
                             <button class="btn-gh" onclick="handleLike('COMMENT', ${comment.id})">❤️ <span id="like-COMMENT-${comment.id}">${comment.likeCount}</span></button>
                             <button class="btn-gh" onclick="toggleReply(${comment.id})">Reply</button>
                             
-                            <%-- 🛠️ 수정/삭제 버튼 제어 --%>
+                            <%-- 수정/삭제 버튼 제어 --%>
                             <c:if test="${sessionScope.id eq comment.loginId}">
                                 <button class="btn-gh" onclick="toggleEdit(${comment.id})">Edit</button>
                             </c:if>
@@ -47,7 +68,7 @@
                     <div class="posts-bubble-body">
                         <div id="comment-text-${comment.id}">${comment.content}</div>
                         
-                        <%-- ✏️ 댓글 수정 폼 (기본 숨김) --%>
+                        <%-- ✏️ 댓글 수정 폼 --%>
                         <div id="comment-edit-form-${comment.id}" style="display:none; margin-top:10px;">
                             <form action="commentModifyProc" method="post">
                                 <input type="hidden" name="id" value="${comment.id}">

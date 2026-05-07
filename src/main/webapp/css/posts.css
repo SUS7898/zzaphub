@@ -173,3 +173,57 @@ a:hover { text-decoration: underline; }
     background-color: #cf222e; color: #fff; padding: 2px 6px; 
     border-radius: 4px; font-size: 11px; margin-right: 6px; vertical-align: middle;
 }
+
+
+/* =========================================
+   🎨 코드 프리뷰 전용 애니메이션 & 디자인 CSS
+   ========================================= */
+.code-preview-container {
+    position: relative;
+    margin-top: 15px;
+    border-radius: 6px;
+    background-color: #1e1e1e; /* 다크 테마 배경 */
+    color: #d4d4d4;
+    overflow: hidden;
+    transition: max-height 0.5s ease-in-out;
+    max-height: 150px; /* 평상시 보여지는 높이 제한 */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+/* 마우스를 올렸을 때 전체 크기로 부드럽게 펼쳐짐 */
+.code-preview-container:hover {
+    max-height: 1000px; 
+    overflow-y: auto;
+}
+
+.code-preview {
+    margin: 0;
+    padding: 16px;
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    white-space: pre-wrap; /* 자동 줄바꿈 및 띄어쓰기 유지 */
+    word-break: break-all;
+}
+
+/* 아래쪽 그라데이션 (더보기 효과) */
+.preview-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 70px;
+    background: linear-gradient(transparent, #1e1e1e 80%);
+    color: #8c959f;
+    text-align: center;
+    line-height: 100px;
+    font-size: 12px;
+    font-weight: 600;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+/* 호버 시 그라데이션 가리기 */
+.code-preview-container:hover .preview-overlay {
+    opacity: 0;
+}

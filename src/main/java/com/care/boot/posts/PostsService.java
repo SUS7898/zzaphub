@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -24,22 +27,20 @@ import jakarta.servlet.http.HttpSession;
 
 @Service
 public class PostsService {
-    @Autowired private IPostsMapper mapper; // 인터페이스 이름 PostsMapper로 수정
+    @Autowired private IPostsMapper mapper;
     @Autowired private IUserMapper userMapper;
     @Autowired private HttpSession session;
     
-    private 
-    String filePath = "/opt/tomcat/tomcat-10/webapps/upload/";
+    // 원래 사용하시던 경로 그대로 복구 (NFS 마운트가 OS단에서 이 경로로 연결된다고 가정)
+    private String filePath = "/opt/tomcat/tomcat-10/webapps/upload/";
     
- // 카테고리별 게시글 목록 (페이징 포함)
     public void postsForm(String cp, String category, Model model) {
         int currentPage = 1;
         try { currentPage = Integer.parseInt(cp); } catch(Exception e) { currentPage = 1; }
 
-        int pageBlock = 10; // 한 페이지에 보여줄 글 수
+        int pageBlock = 10;
         int begin = (currentPage - 1) * pageBlock;
 
-        // Mapper에 카테고리와 시작 번호, 블록 크기 전달
         List<PostsDTO> postsList = mapper.getPostsList(category, begin, pageBlock);
         int totalCount = mapper.getTotalCountByCategory(category);
 
@@ -51,12 +52,10 @@ public class PostsService {
         model.addAttribute("result", result);
     }
 
-    // 메인 페이지용: 특정 카테고리 최신글 가져오기
     public List<PostsDTO> getPostsByCategory(String category, int limit) {
         return mapper.getRecentByCategory(category, limit);
     }
 
-    // 메인 페이지용: 인기 게시글 가져오기
     public List<PostsDTO> getPopularPosts(int limit) {
         return mapper.getPopularPosts(limit);
     }
@@ -79,7 +78,6 @@ public class PostsService {
         posts.setUserId(user.getId()); 
         posts.setCategory(multi.getParameter("category"));
         
-        // 파일 업로드 로직
         MultipartFile file = multi.getFile("upfile");
         if(file != null && file.getSize() != 0) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss-");
@@ -93,15 +91,13 @@ public class PostsService {
             String fullPath = fileSaveDirectory + "/" + fileTime + fileName;
             try {
                 file.transferTo(new File(fullPath));
-                // posts.setFileName(fullPath); // DTO에 필드가 있다면 주석 해제
+                posts.setFileName(fullPath); // DB에 파일 전체 경로 저장 (프리뷰를 위해 필수)
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
         
         mapper.postsWriteProc(posts);
-        
-     // 2. 💰 포인트 지급 (예: 글 작성 시 100포인트)
         userMapper.addPoint(user.getId(), 15);
         
         return "redirect:postsForm";
@@ -109,27 +105,43 @@ public class PostsService {
     
     public PostsDTO postsContent(String id) {
         long n = 0;
-        try {
-            n = Long.parseLong(id);
-        } catch(Exception e) {
-            return null;
-        }
+        try { n = Long.parseLong(id); } catch(Exception e) { return null; }
         
         PostsDTO posts = mapper.postsContent(n);
         if(posts != null) {
-            mapper.incrementHits(n); // Mapper 메서드명 incrementHits로 수정
+            mapper.incrementHits(n);
             posts.setViewCount(posts.getViewCount() + 1);
         }
         return posts;
     }
 
+    // 🔍 코드 프리뷰 기능 유지
+    public String getFilePreviewContent(String fullPath) {
+        if (fullPath == null || fullPath.isEmpty()) return null;
+        
+        String lowerPath = fullPath.toLowerCase();
+        // .class 제외, 코딩 확장자만 필터링
+        if (lowerPath.endsWith(".txt") || lowerPath.endsWith(".js") || 
+            lowerPath.endsWith(".py") || lowerPath.endsWith(".java") || 
+            lowerPath.endsWith(".html") || lowerPath.endsWith(".xml")) {
+            
+            File f = new File(fullPath);
+            if (!f.exists()) return null;
+            
+            try {
+                byte[] bytes = Files.readAllBytes(Paths.get(fullPath));
+                String content = new String(bytes, StandardCharsets.UTF_8);
+                return content.length() > 2000 ? content.substring(0, 2000) + "\n\n... (파일 내용이 길어 생략되었습니다)" : content;
+            } catch (Exception e) {
+                return "파일 내용을 읽는 중 오류가 발생했습니다.";
+            }
+        }
+        return null;
+    }
+
     public void postsDownload(String id, HttpServletResponse response) {
         long n = 0;
-        try {
-            n = Long.parseLong(id);
-        } catch(Exception e) {
-            return;
-        }
+        try { n = Long.parseLong(id); } catch(Exception e) { return; }
         
         String fullPath = mapper.postsDownload((int)n); 
         if(fullPath == null || fullPath.isEmpty()) return;
@@ -151,17 +163,13 @@ public class PostsService {
 
     public String postsModify(String id, Model model) {
         long n = 0;
-        try {
-            n = Long.parseLong(id);
-        } catch (Exception e) {
-            return "redirect:postsForm";
-        }
+        try { n = Long.parseLong(id); } catch (Exception e) { return "redirect:postsForm"; }
         
         PostsDTO posts = mapper.postsContent(n);
         if(posts == null) return "redirect:postsForm";
         
         model.addAttribute("posts", posts);
-        return "posts/postsModify"; // JSP 폴더 posts/
+        return "posts/postsModify";
     }
 
     public String postsModifyProc(PostsDTO posts) {
@@ -196,9 +204,7 @@ public class PostsService {
         boolean isOwner = sessionId != null && sessionId.equals(posts.getLoginId());
 
         if(isAdmin || isOwner) {
-            // 1. 해당 글의 모든 댓글 삭제 (외래키 제약 해결)
             mapper.deleteCommentsByPostId(n);
-            // 2. 게시글 삭제
             mapper.postsDeleteProc(n);
             return "게시글 삭제 완료";
         }
