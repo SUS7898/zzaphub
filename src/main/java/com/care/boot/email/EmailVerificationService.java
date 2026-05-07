@@ -34,6 +34,10 @@ public class EmailVerificationService {
 			return EmailVerificationResponse.fail("invalid_purpose", "지원하지 않는 인증 목적입니다.");
 		}
 
+		if(isImplementedPurpose(purpose) == false) {
+			return EmailVerificationResponse.fail("not_implemented", "v1에서는 회원가입 이메일 인증만 지원합니다.");
+		}
+
 		String validationMessage = validateEmail(email);
 		if(validationMessage != null) {
 			return EmailVerificationResponse.fail("invalid_email", validationMessage);
@@ -71,6 +75,10 @@ public class EmailVerificationService {
 			purpose = EmailVerificationPurpose.from(request.getPurpose());
 		} catch (IllegalArgumentException e) {
 			return EmailVerificationResponse.fail("invalid_purpose", "지원하지 않는 인증 목적입니다.");
+		}
+
+		if(isImplementedPurpose(purpose) == false) {
+			return EmailVerificationResponse.fail("not_implemented", "v1에서는 회원가입 이메일 인증만 지원합니다.");
 		}
 
 		String validationMessage = validateEmail(email);
@@ -114,8 +122,11 @@ public class EmailVerificationService {
 	}
 
 	private boolean requiresExistingUser(EmailVerificationPurpose purpose) {
-		return purpose == EmailVerificationPurpose.SIGNUP
-			|| purpose == EmailVerificationPurpose.PASSWORD_RESET;
+		return purpose == EmailVerificationPurpose.SIGNUP;
+	}
+
+	private boolean isImplementedPurpose(EmailVerificationPurpose purpose) {
+		return purpose == EmailVerificationPurpose.SIGNUP;
 	}
 
 	private String createCode() {
