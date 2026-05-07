@@ -90,7 +90,7 @@ window - preferences - Maven - "Download Artifact Javadoc" check
 	<delete id="deleteProc">
 		DELETE FROM users WHERE login_id = #{loginId}
 	</delete>
-
+	
 	
 	<!-- 8. 회원 포인트 -->
 	<update id="addPoint">
@@ -120,6 +120,7 @@ window - preferences - Maven - "Download Artifact Javadoc" check
 		ON DUPLICATE KEY UPDATE reason = VALUES(reason)
 	</insert>
 </mapper>
+
 
 
 

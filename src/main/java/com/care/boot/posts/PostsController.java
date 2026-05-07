@@ -61,14 +61,27 @@ public class PostsController {
     }
     
     @RequestMapping("postsContent")
-    public String postsContent(@RequestParam("id") Long id, Model model) { // String -> Long 변경
+    public String postsContent(@RequestParam("id") Long id, Model model) {
         PostsDTO post = service.postsContent(String.valueOf(id));
         if(post == null) return "redirect:postsForm";
         
-        // ✅ [중요] 게시글 상세 데이터 외에 필요한 데이터들 추가
         model.addAttribute("posts", post);
-        model.addAttribute("comments", commentsService.getCommentsList(id)); // 댓글 리스트 추가
-        model.addAttribute("postLikes", interactionsMapper.getLikeCount("POST", id.intValue())); // 좋아요 수 추가
+        model.addAttribute("comments", commentsService.getCommentsList(id)); // 댓글 리스트
+        model.addAttribute("postLikes", interactionsMapper.getLikeCount("POST", id.intValue())); // 좋아요 수
+        
+        // 📦 [추가된 부분] 첨부파일 프리뷰 & 다운로드 원본 이름 세팅
+        if (post.getFileName() != null && !post.getFileName().isEmpty()) {
+            // "시간-파일명" 형태에서 실제 파일명만 추출
+            String[] splitPath = post.getFileName().substring(post.getFileName().lastIndexOf("/") + 1).split("-", 2);
+            String originalName = splitPath.length > 1 ? splitPath[1] : splitPath[0];
+            model.addAttribute("originalFileName", originalName);
+            
+            // 파일 내용 텍스트 추출 (2단계에서 만든 서비스 함수 호출)
+            String previewContent = service.getFilePreviewContent(post.getFileName());
+            if (previewContent != null) {
+                model.addAttribute("filePreview", previewContent);
+            }
+        }
         
         return "posts/postsContent";
     }

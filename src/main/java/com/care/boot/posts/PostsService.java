@@ -32,7 +32,7 @@ public class PostsService {
     @Autowired private HttpSession session;
     
     // 원래 사용하시던 경로 그대로 복구 (NFS 마운트가 OS단에서 이 경로로 연결된다고 가정)
-    private String filePath = "/opt/tomcat/tomcat-10/webapps/upload/";
+ private String filePath = "/opt/tomcat/tomcat-10/webapps/upload/";
     
     public void postsForm(String cp, String category, Model model) {
         int currentPage = 1;
