@@ -15,9 +15,13 @@
     <nav class="category-tabs">
         <a href="postsForm?category=ALL" class="${currentCategory == 'ALL' ? 'active' : ''}">All</a>
         <a href="postsForm?category=NOTICE" class="${currentCategory == 'NOTICE' ? 'active' : ''}">Notice</a>
+        <a href="postsForm?category=FREE" class="${currentCategory == 'FREE' ? 'active' : ''}">Free</a>
         <a href="postsForm?category=TECH" class="${currentCategory == 'TECH' ? 'active' : ''}">Tech</a>
         <a href="postsForm?category=LIFE" class="${currentCategory == 'LIFE' ? 'active' : ''}">Life</a>
         <a href="postsForm?category=QNA" class="${currentCategory == 'QNA' ? 'active' : ''}">Q&A</a>
+         <a href="postsForm?category=OS" class="${currentCategory == 'OS' ? 'active' : ''}">OS</a>
+        <a href="postsForm?category=CODE" class="${currentCategory == 'CODE' ? 'active' : ''}">Code</a>
+        <a href="postsForm?category=REPROT" class="${currentCategory == 'ROPROT' ? 'active' : ''}">Report</a>
     </nav>
 
     <div class="posts-list-box">

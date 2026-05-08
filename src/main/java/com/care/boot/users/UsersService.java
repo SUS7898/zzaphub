@@ -12,6 +12,7 @@ import com.care.boot.PageService;
 
 import jakarta.servlet.http.HttpSession;
 
+
 @Service
 public class UsersService {
 	@Autowired private IUserMapper mapper;
@@ -195,6 +196,52 @@ public class UsersService {
 	    // mapper에 updatePw 메서드가 있어야 합니다.
 	    int result = mapper.updatePw(loginId, encodedPw);
 	    return result > 0 ? "success" : "fail";
+	}
+	
+	
+	@Transactional
+	public String updateRoleProc(Long userId, String newRole) { // 👈 메서드명 변경
+		System.out.println("\n▶▶ [권한 변경 로직 시작] 대상 유저 ID: " + userId + ", 부여될 권한: " + newRole);
+		
+		try {
+			// 권한 변경 수행
+			mapper.updateUserRole(userId, newRole);
+			System.out.println("  [1] 유저 테이블 업데이트 완료 (role = " + newRole + ")");
+
+			// 관리자/매니저로 승격된 경우
+			if ("ADMIN".equals(newRole) || "MANAGER".equals(newRole)) {
+				int specialTitleId = "ADMIN".equals(newRole) ? 100 : 101;
+				
+				mapper.unequipAllTitles(userId);
+				System.out.println("  [2-1] 기존 장착 칭호 모두 해제");
+				
+				mapper.insertSpecialTitle(userId, specialTitleId);
+				System.out.println("  [2-2] 특수 칭호(ID: " + specialTitleId + ") 지급 (중복일 경우 무시)");
+				
+				mapper.equipSpecialTitle(userId, specialTitleId);
+				System.out.println("  [2-3] 특수 칭호(ID: " + specialTitleId + ") 장착 완료");
+			} 
+			// 일반 유저(USER)로 강등된 경우
+			else if ("USER".equals(newRole)) {
+				mapper.unequipAllTitles(userId);
+				System.out.println("  [2-1] 기존 장착 칭호 모두 해제 (강등)");
+				
+				mapper.deleteSpecialTitles(userId);
+				System.out.println("  [2-2] 인벤토리에서 특수 칭호(100, 101) 영구 삭제 완료");
+			}
+
+			System.out.println("✅ [권한 변경 로직 정상 종료] 유저 권한 및 칭호 동기화 성공!\n");
+			
+			// 🌟 기존 Proc 스타일처럼 성공 메시지 반환
+			return "권한 변경 완료"; 
+			
+		} catch (Exception e) {
+			System.out.println("❌ [권한/칭호 변경 중 DB 오류 발생] User ID: " + userId);
+			e.printStackTrace(); 
+			
+			// 🌟 기존 Proc 스타일처럼 실패 메시지 반환
+			return "권한 변경을 다시 시도하세요."; 
+		}
 	}
 
 }

@@ -36,7 +36,20 @@ public interface IUserMapper {
 	String findIdByEmail(String email); // 이메일로 아이디 검색
 	int updatePw(@Param("loginId") String loginId, @Param("pw") String pw); // 비밀번호 변경
 	
-	
+	// 1. 유저 권한(Role) 업데이트
+    void updateUserRole(@Param("id") Long id, @Param("role") String role);
+
+    // 2. 관리자/매니저 지정 시 기존 칭호 모두 해제
+    void unequipAllTitles(Long userId);
+
+    // 3. 전용 칭호 지급 (이미 있으면 무시)
+    void insertSpecialTitle(@Param("userId") Long userId, @Param("titleId") int titleId);
+
+    // 4. 전용 칭호 즉시 장착
+    void equipSpecialTitle(@Param("userId") Long userId, @Param("titleId") int titleId);
+    
+    // 특정 유저의 관리자/매니저(특수) 칭호를 인벤토리에서 삭제
+    void deleteSpecialTitles(Long userId);
 }
 
 

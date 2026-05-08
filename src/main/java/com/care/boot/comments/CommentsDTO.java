@@ -9,7 +9,21 @@ public class CommentsDTO {
     private String status;      // ENUM ('NORMAL', 'BLIND', 'DELETED')
     private String createdAt;   // 작성일
     
-    // 조인을 위해 추가한 필드
+    
+ // 기존 필드들 아래에 추가하세요
+    private String equippedTitle; // 장착 중인 칭호 이름
+    
+    
+    
+    public String getEquippedTitle() {
+		return equippedTitle;
+	}
+
+	public void setEquippedTitle(String equippedTitle) {
+		this.equippedTitle = equippedTitle;
+	}
+
+	// 조인을 위해 추가한 필드
     private String loginId;     // 작성자 아이디 (users 테이블)
     private int likeCount;
 

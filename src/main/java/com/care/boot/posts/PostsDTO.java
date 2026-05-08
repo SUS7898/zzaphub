@@ -25,7 +25,20 @@ public class PostsDTO {
     private String createdAt;   // DB: created_at
     private String fileName;
     
-    public Long getUserId() {
+    
+ // 기존 필드들 아래에 추가하세요
+    private String equippedTitle; // 장착 중인 칭호 이름
+    
+    
+    
+    
+    public String getEquippedTitle() {
+		return equippedTitle;
+	}
+	public void setEquippedTitle(String equippedTitle) {
+		this.equippedTitle = equippedTitle;
+	}
+	public Long getUserId() {
 		return userId;
 	}
 	public void setUserId(Long userId) {

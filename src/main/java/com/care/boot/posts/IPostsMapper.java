@@ -44,4 +44,5 @@ public interface IPostsMapper {
     String findIdByEmail(@Param("email") String email);
     
     void addPoint(@Param("id") Long id, @Param("point") int point);
+
 }

@@ -125,7 +125,32 @@ window - preferences - Maven - "Download Artifact Javadoc" check
 		SET pw = #{pw} 
 		WHERE login_id = #{loginId}
 	</update>
+
+
+    <update id="updateUserRole">
+        UPDATE users SET role = #{role} WHERE id = #{id}
+    </update>
+
+    <update id="unequipAllTitles">
+        UPDATE user_titles SET is_equipped = 0 WHERE user_id = #{userId}
+    </update>
+
+    <insert id="insertSpecialTitle">
+        INSERT IGNORE INTO user_titles (user_id, title_id, is_equipped, enhance_level, fail_count)
+        VALUES (#{userId}, #{titleId}, 1, 0, 0)
+    </insert>
+
+    <update id="equipSpecialTitle">
+        UPDATE user_titles SET is_equipped = 1 
+        WHERE user_id = #{userId} AND title_id = #{titleId}
+    </update>
+
+<delete id="deleteSpecialTitles">
+    DELETE FROM user_titles 
+    WHERE user_id = #{userId} AND title_id IN (100, 101)
+</delete>
 </mapper>
+
 
 
 
