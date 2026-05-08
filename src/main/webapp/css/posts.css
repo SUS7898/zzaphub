@@ -174,7 +174,70 @@ a:hover { text-decoration: underline; }
     border-radius: 4px; font-size: 11px; margin-right: 6px; vertical-align: middle;
 }
 
+/* 유저 장착 칭호 뱃지 */
+.user-title-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #bf8700;
+    background-color: #fff8c5;
+    border: 1px solid rgba(212, 167, 44, 0.4);
+    border-radius: 4px;
+    margin-right: 4px;
+    vertical-align: middle;
+}
+/* =========================================
+   👑 유저 장착 칭호 전용 스타일
+   ========================================= */
+.user-title-badge {
+    display: inline-block;
+    color: #0969da;               /* 깃허브 포인트 파란색 */
+    background-color: #ddf4ff;    /* 연한 파란색 배경 */
+    border: 1px solid rgba(9, 105, 218, 0.2);
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-size: 12px;              /* 닉네임보다 살짝 작게 */
+    font-weight: 700;             /* 글씨는 굵게 */
+    margin-right: 6px;            /* 닉네임과의 간격 */
+    vertical-align: middle;
+}
 
+/* point.css 에 추가 */
+.enhance-card {
+    background: #fff;
+    border: 1px solid #d0d7de;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(140,149,159,0.2);
+    overflow: hidden;
+    max-width: 600px;
+    margin: 0 auto;
+}
+.enhance-header {
+    background: #24292f;
+    color: #fff;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.title-display {
+    text-align: center;
+    padding: 40px 0;
+    background: radial-gradient(circle, #fff 0%, #f6f8fa 100%);
+}
+.main-title-name { font-size: 32px; font-weight: 800; color: #24292f; margin: 10px 0; }
+.main-level-badge { 
+    display: inline-block; font-size: 24px; color: #0969da; 
+    background: #ddf4ff; padding: 4px 16px; border-radius: 20px; font-weight: bold;
+}
+.pity-bar-bg { background: #eff1f3; height: 12px; border-radius: 6px; margin: 10px 0; overflow: hidden; }
+.pity-bar-fill { background: linear-gradient(90deg, #cf222e, #ff7b72); height: 100%; transition: width 0.5s ease; }
+.btn-enhance-main {
+    width: 100%; padding: 15px; background: #2da44e; color: #fff;
+    font-size: 20px; font-weight: bold; border: none; cursor: pointer; transition: 0.3s;
+}
+.btn-enhance-main:hover { background: #2c974b; transform: translateY(-2px); }
 /* =========================================
    🎨 코드 프리뷰 전용 애니메이션 & 디자인 CSS
    ========================================= */

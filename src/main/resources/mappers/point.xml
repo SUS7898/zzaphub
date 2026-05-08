@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.care.boot.point.IPointMapper">
+
+    <select id="getUserPoint" resultType="int">
+        SELECT point FROM users WHERE id = #{userId}
+    </select>
+    
+    <update id="deductPoint">
+        UPDATE users SET point = point - #{amount} WHERE id = #{userId}
+    </update>
+
+    <select id="getEmoticonPrice" resultType="Integer">
+        SELECT price FROM emoticons WHERE id = #{emoticonId}
+    </select>
+    
+    <select id="checkUserEmoticon" resultType="int">
+        SELECT COUNT(*) FROM user_emoticons WHERE user_id = #{userId} AND emoticon_id = #{emoticonId}
+    </select>
+    
+    <insert id="insertUserEmoticon">
+        INSERT INTO user_emoticons (user_id, emoticon_id) VALUES (#{userId}, #{emoticonId})
+    </insert>
+
+    <select id="getTitleInfo" resultType="com.care.boot.point.UserTitleDTO">
+        SELECT id as titleId, price, next_title_id as nextTitleId FROM titles WHERE id = #{titleId}
+    </select>
+
+    <select id="getUserTitle" resultType="com.care.boot.point.UserTitleDTO">
+    SELECT ut.user_id as userId, ut.title_id as titleId, ut.is_equipped as isEquipped, 
+           ut.enhance_level as enhanceLevel, ut.fail_count as failCount,
+           t.next_title_id as nextTitleId, 
+           t.tier_order as tierOrder  FROM user_titles ut
+    JOIN titles t ON ut.title_id = t.id
+    WHERE ut.user_id = #{userId} AND ut.title_id = #{titleId}
+</select>
+
+<select id="getMyTitles" resultType="com.care.boot.point.UserTitleDTO">
+    SELECT 
+        ut.title_id as titleId, 
+        t.name as titleName, 
+        ut.is_equipped as isEquipped, 
+        ut.enhance_level as enhanceLevel,
+        t.title_type as titleType  FROM user_titles ut
+    JOIN titles t ON ut.title_id = t.id
+    WHERE ut.user_id = #{userId}
+</select>
+
+
+    <insert id="insertUserTitle">
+        INSERT INTO user_titles (user_id, title_id, is_equipped, enhance_level, fail_count) 
+        VALUES (#{userId}, #{titleId}, false, 0, 0)
+    </insert>
+
+    <select id="getRandomGachaTitle" resultType="com.care.boot.point.UserTitleDTO">
+        SELECT id as titleId, name as titleName 
+        FROM titles 
+        WHERE title_type = 'GACHA' 
+          AND id NOT IN (SELECT title_id FROM user_titles WHERE user_id = #{userId})
+        ORDER BY RAND() LIMIT 1
+    </select>	
+
+    <select id="getTitleIdByName" resultType="Integer">
+        SELECT id FROM titles WHERE name = #{name} LIMIT 1
+    </select>
+
+    <update id="updateEnhanceSuccess">
+        UPDATE user_titles 
+        SET enhance_level = enhance_level + 1 
+        WHERE user_id = #{userId} AND title_id = #{titleId}
+    </update>
+
+    <update id="updateEnhanceFail">
+        UPDATE user_titles 
+        SET fail_count = fail_count + 1
+        <if test="dropLevel == true">
+            , enhance_level = enhance_level - 1
+        </if>
+        WHERE user_id = #{userId} AND title_id = #{titleId}
+    </update>
+
+    <delete id="deleteUserTitle">
+        DELETE FROM user_titles WHERE user_id = #{userId} AND title_id = #{titleId}
+    </delete>
+
+    <update id="unequipAll">
+        UPDATE user_titles SET is_equipped = false WHERE user_id = #{userId}
+    </update>
+
+    <update id="equipTitle">
+        UPDATE user_titles SET is_equipped = true WHERE user_id = #{userId} AND title_id = #{titleId}
+    </update>
+
+
+	<select id="getMainProgressionTitle"
+		resultType="com.care.boot.point.UserTitleDTO">
+		SELECT
+		ut.title_id as titleId,
+		t.name as titleName,
+		ut.enhance_level as enhanceLevel,
+		ut.fail_count as failCount,
+		t.next_title_id as nextTitleId
+		FROM user_titles ut
+		JOIN titles t ON ut.title_id = t.id
+		WHERE ut.user_id = #{userId} AND t.title_type = 'PROGRESSION'
+		ORDER BY t.tier_order DESC LIMIT 1
+	</select>
+
+</mapper>

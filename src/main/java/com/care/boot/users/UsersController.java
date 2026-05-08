@@ -208,6 +208,20 @@ public class UsersController {
 	    return "users/resetPw";
 	}
 	
+	// 🚀 관리자 페이지에서 권한 변경 버튼을 눌렀을 때 실행되는 Proc
+		@PostMapping("/updateRoleProc") // 👈 앞에 슬래시(/) 추가!
+		public String updateRoleProc(@RequestParam("userId") Long userId, 
+		                             @RequestParam("newRole") String newRole,
+		                             RedirectAttributes ra) {
+			
+			System.out.println("\n[Controller] updateRoleProc 요청 도착! (ID: " + userId + ", Role: " + newRole + ")");
+			
+			String msg = service.updateRoleProc(userId, newRole);
+			ra.addFlashAttribute("msg", msg);
+			
+			// 👈 여기도 앞에 슬래시(/)를 반드시 추가해야 안전하게 이동합니다!
+			return "redirect:/admin/users"; 
+		}
 	/*
 	 http://localhost:8086/dbQuiz/kakaoLogin?
 	 code=G2QFgIqYioKud_fa02jp1mikcoWU6ccLmKC_-T0xgHFoZlqddz74QKyM9sowSyG0x1c
