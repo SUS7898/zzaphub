@@ -149,6 +149,10 @@ window - preferences - Maven - "Download Artifact Javadoc" check
     DELETE FROM user_titles 
     WHERE user_id = #{userId} AND title_id IN (100, 101)
 </delete>
+
+<select id="findIdByEmail" resultType="string">
+    SELECT login_id FROM users WHERE email = #{email}
+</select>
 </mapper>
 
 
