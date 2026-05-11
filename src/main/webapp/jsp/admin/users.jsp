@@ -40,7 +40,7 @@
 
                             <%-- 2. 본인이 'ADMIN'인 경우에만 수정 가능 --%>
                             <c:when test="${sessionScope.role eq 'ADMIN'}">
-                                <form action="/admin/updateRole" method="post">
+                                <form action="/updateRoleProc" method="post">
                                     <input type="hidden" name="userId" value="${u.id}">
                                     <select name="newRole" class="role-select" onchange="confirmRoleChange(this)">
                                         <option value="USER" ${u.role == 'USER' ? 'selected' : ''}>USER</option>

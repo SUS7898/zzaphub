@@ -1,0 +1,152 @@
+/* 강화소 전체 컨테이너 */
+.point-container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 0 20px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+/* 강화 카드 레이아웃 */
+.enhance-card {
+    background: #ffffff;
+    border: 1px solid #d0d7de;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(140, 149, 159, 0.15);
+    overflow: hidden;
+}
+
+/* 헤더 영역 */
+.enhance-header {
+    background: #24292f;
+    color: #ffffff;
+    padding: 24px;
+    text-align: center;
+}
+
+.enhance-header h2 {
+    margin: 0;
+    font-size: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+/* 본문 영역 */
+.enhance-body {
+    padding: 32px;
+    text-align: center;
+}
+
+.current-balance {
+    font-size: 16px;
+    color: #57606a;
+    margin-bottom: 30px;
+}
+
+.current-balance strong {
+    color: #24292f;
+    font-size: 18px;
+}
+
+/* 칭호 전시 구역 */
+.title-display {
+    background: #f6f8fa;
+    border: 1px solid #d0d7de;
+    border-radius: 8px;
+    padding: 30px;
+    margin-bottom: 30px;
+}
+
+.tier-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #57606a;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.main-title-name {
+    font-size: 32px;
+    font-weight: 800;
+    color: #24292f;
+    margin: 10px 0;
+}
+
+.main-level-badge {
+    display: inline-block;
+    font-size: 20px;
+    color: #0969da;
+    background: #ddf4ff;
+    padding: 4px 16px;
+    border-radius: 20px;
+    font-weight: bold;
+}
+
+/* 천장 시스템 (Pity) */
+.pity-section {
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+.pity-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.pity-bar-bg {
+    background: #eff1f3;
+    height: 12px;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid #d0d7de;
+}
+
+.pity-bar-fill {
+    background: linear-gradient(90deg, #cf222e, #ff7b72);
+    height: 100%;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pity-desc {
+    display: block;
+    margin-top: 8px;
+    font-size: 12px;
+    color: #57606a;
+}
+
+/* 버튼 스타일 */
+.enhance-action {
+    border-top: 1px solid #d0d7de;
+    padding-top: 24px;
+}
+
+.enhance-cost {
+    margin-bottom: 15px;
+    color: #57606a;
+}
+
+.btn-enhance-main {
+    width: 100%;
+    padding: 16px;
+    background: #2da44e;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 600;
+    border: 1px solid rgba(27, 31, 36, 0.15);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-enhance-main:hover {
+    background: #2c974b;
+    box-shadow: 0 4px 12px rgba(45, 164, 78, 0.3);
+}
+
+.btn-enhance-main:active {
+    transform: scale(0.98);
+}

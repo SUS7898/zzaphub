@@ -3,88 +3,102 @@
 
 <mapper namespace="com.care.boot.posts.IPostsMapper">
 
-    <resultMap id="postsMap" type="com.care.boot.posts.PostsDTO">
-        <id column="id" property="id" />
-        <result column="user_id" property="userId" />
-        <result column="login_id" property="loginId" />
-        <result column="view_count" property="viewCount" />
-        <result column="created_at" property="createdAt" />
-        <result column="file_name" property="fileName" />
-        <result column="category" property="category" />
-        <result column="title" property="title" />
-        <result column="content" property="content" />
-    </resultMap>
+	<resultMap id="postsMap" type="com.care.boot.posts.PostsDTO">
+		<id column="id" property="id" />
+		<result column="user_id" property="userId" />
+		<result column="login_id" property="loginId" />
+		<result column="view_count" property="viewCount" />
+		<result column="created_at" property="createdAt" />
+		<result column="file_name" property="fileName" />
+		<result column="category" property="category" />
+		<result column="title" property="title" />
+		<result column="content" property="content" />
+	</resultMap>
 
-    <select id="getPostsList" resultMap="postsMap">
-        SELECT p.*, u.login_id
-        FROM posts p JOIN users u ON p.user_id = u.id
-        <where>
-            <if test="category != null and category != 'ALL'">
-                AND p.category = #{category}
-            </if>
-        </where>
-        ORDER BY p.id DESC
-        LIMIT #{begin}, #{pageBlock}
-    </select>
 
-    <select id="getTotalCountByCategory" resultType="int">
-        SELECT COUNT(*) FROM posts
-        <where>
-            <if test="category != null and category != 'ALL'">
-                AND category = #{category}
-            </if>
-        </where>
-    </select>
+	<select id="getPostsList" resultMap="postsMap">
+		SELECT p.*, u.login_id
+		FROM posts p JOIN users u ON p.user_id = u.id
+		<where>
+			<if test="category != null and category != 'ALL'">
+				AND p.category = #{category}
+			</if>
+		</where>
+		ORDER BY p.id DESC
+		LIMIT #{begin}, #{pageBlock}
+	</select>
 
-    <select id="postsContent" resultMap="postsMap">
-        SELECT p.*, u.login_id
-        FROM posts p JOIN users u ON p.user_id = u.id
-        WHERE p.id = #{id}
-    </select>
+	<select id="getTotalCountByCategory" resultType="int">
+		SELECT COUNT(*) FROM posts
+		<where>
+			<if test="category != null and category != 'ALL'">
+				AND category = #{category}
+			</if>
+		</where>
+	</select>
 
-    <insert id="postsWriteProc">
-        INSERT INTO posts (user_id, category, title, content, file_name)
-        VALUES (#{userId}, #{category}, #{title}, #{content}, #{fileName})
-    </insert>
+	<select id="postsContent"
+		resultType="com.care.boot.posts.PostsDTO">
+		SELECT
+		p.id,
+		p.user_id AS userId,
+		u.login_id AS loginId, p.title,
+		p.content,
+		p.category,
+		p.view_count AS viewCount,
+		p.status,
+		p.created_at AS createdAt,
+		t.name AS equippedTitle FROM posts p
+		JOIN users u ON p.user_id = u.id LEFT JOIN user_titles ut ON p.user_id =
+		ut.user_id AND ut.is_equipped = true
+		LEFT JOIN titles t ON ut.title_id = t.id
+		WHERE p.id = #{id}
+	</select>
 
-    <update id="incrementHits">
-        UPDATE posts SET view_count = view_count + 1 WHERE id = #{id}
-    </update>
-    
-    <select id="getRecentByCategory" resultMap="postsMap">
-        SELECT p.*, u.login_id
-        FROM posts p JOIN users u ON p.user_id = u.id
-        WHERE p.category = #{category}
-        ORDER BY p.id DESC
-        LIMIT #{limit}
-    </select>
+	<insert id="postsWriteProc">
+		INSERT INTO posts (user_id, category, title, content, file_name)
+		VALUES (#{userId}, #{category}, #{title}, #{content}, #{fileName})
+	</insert>
 
-    <select id="getPopularPosts" resultMap="postsMap">
-        SELECT p.*, u.login_id 
-        FROM posts p JOIN users u ON p.user_id = u.id
-        ORDER BY p.view_count DESC 
-        LIMIT #{limit}
-    </select>
+	<update id="incrementHits">
+		UPDATE posts SET view_count = view_count + 1 WHERE id = #{id}
+	</update>
 
-    <delete id="deleteCommentsByPostId">
-        DELETE FROM comments WHERE post_id = #{postId}
-    </delete>
+	<select id="getRecentByCategory" resultMap="postsMap">
+		SELECT p.*, u.login_id
+		FROM posts p JOIN users u ON p.user_id = u.id
+		WHERE p.category = #{category}
+		ORDER BY p.id DESC
+		LIMIT #{limit}
+	</select>
 
-    <delete id="postsDeleteProc">
-        DELETE FROM posts WHERE id = #{id}
-    </delete>
+	<select id="getPopularPosts" resultMap="postsMap">
+		SELECT p.*, u.login_id
+		FROM posts p JOIN users u ON p.user_id = u.id
+		ORDER BY p.view_count DESC
+		LIMIT #{limit}
+	</select>
 
-    <update id="postsModifyProc">
-        UPDATE posts SET title = #{title}, content = #{content}, category = #{category} WHERE id = #{id}
-    </update>
+	<delete id="deleteCommentsByPostId">
+		DELETE FROM comments WHERE post_id = #{postId}
+	</delete>
 
-    <select id="postsDownload" resultType="string">
-        SELECT file_name FROM posts WHERE id = #{id}
-    </select>
+	<delete id="postsDeleteProc">
+		DELETE FROM posts WHERE id = #{id}
+	</delete>
 
-    <update id="addPoint">
-        UPDATE users SET point = point + #{point} 
-        WHERE id = (SELECT user_id FROM posts WHERE id = #{id})
-    </update>
+	<update id="postsModifyProc">
+		UPDATE posts SET title = #{title}, content = #{content}, category =
+		#{category} WHERE id = #{id}
+	</update>
+
+	<select id="postsDownload" resultType="string">
+		SELECT file_name FROM posts WHERE id = #{id}
+	</select>
+
+	<update id="addPoint">
+		UPDATE users SET point = point + #{point}
+		WHERE id = (SELECT user_id FROM posts WHERE id = #{id})
+	</update>
 
 </mapper>

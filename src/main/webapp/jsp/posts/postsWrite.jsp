@@ -24,7 +24,10 @@
     <select name="category" id="category" class="form-control">
         <option value="FREE">자유게시판</option>
         <option value="QNA">Q&A</option>
-        <option value="PROGRAM">프로그램 게시판</option>
+        <option value="PROGRAM">프로그램</option>
+        <option value="OS">OS</option>
+        <option value="CODE">코드</option>
+                <option value="REPROT">신고</option>
         
         <%-- 👑 관리자(ADMIN) 또는 매니저(MANAGER)에게만 공지사항 옵션 노출 --%>
         <c:if test="${sessionScope.role eq 'ADMIN' or sessionScope.role eq 'MANAGER'}">
