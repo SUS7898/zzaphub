@@ -48,6 +48,7 @@
 		p.view_count AS viewCount,
 		p.status,
 		p.created_at AS createdAt,
+		p.file_name AS fileName,
 		t.name AS equippedTitle FROM posts p
 		JOIN users u ON p.user_id = u.id LEFT JOIN user_titles ut ON p.user_id =
 		ut.user_id AND ut.is_equipped = true
